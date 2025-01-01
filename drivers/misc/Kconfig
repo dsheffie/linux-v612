@@ -9,6 +9,10 @@ config SENSORS_LIS3LV02D
 	tristate
 	depends on INPUT
 
+config CSR_CONSOLE
+       tristate "CSR-based console for RISCV"
+       depends on RISCV
+
 config AD525X_DPOT
 	tristate "Analog Devices Digital Potentiometers"
 	depends on (I2C || SPI) && SYSFS
