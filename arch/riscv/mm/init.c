@@ -238,6 +238,7 @@ static void __init setup_bootmem(void)
 
 
 	memblock_reserve(1UL<<21, 1UL<<22);
+	memblock_reserve(256*1024*1024, 0x101fffff);
 	/*
 	 * Make sure we align the start of the memory on a PMD boundary so that
 	 * at worst, we map the linear mapping with PMD mappings.
@@ -978,8 +979,8 @@ static void __init create_fdt_early_page_table(uintptr_t fix_fdt_va,
 					       uintptr_t dtb_pa)
 {
 #ifndef CONFIG_BUILTIN_DTB
-	uintptr_t pa = dtb_pa & ~(PMD_SIZE - 1);
-
+  uintptr_t pa = dtb_pa & ~(PMD_SIZE - 1);
+	//printk(KERN_INFO "dtb pa = %lx\n", pa);
 	/* Make sure the fdt fixmap address is always aligned on PMD size */
 	BUILD_BUG_ON(FIX_FDT % (PMD_SIZE / PAGE_SIZE));
 
@@ -1006,6 +1007,7 @@ static void __init create_fdt_early_page_table(uintptr_t fix_fdt_va,
 #endif
 
 	dtb_early_pa = dtb_pa;
+	
 }
 
 /*
