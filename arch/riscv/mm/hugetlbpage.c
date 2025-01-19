@@ -6,8 +6,14 @@
 pte_t mk_huge_pte(struct vm_area_struct *vma, struct page *page, pgprot_t pgprot)
 {
 	pte_t pte;
-	unsigned int shift = huge_page_shift(hstate_vma(vma));
-
+	struct hstate *h = NULL;
+	
+	if(vma->vm_file == NULL) {
+	  panic("vma->vm_file is NULL!");
+	}
+	h = hstate_vma(vma);
+	unsigned int shift = huge_page_shift(h);
+	
 	if (shift == PGDIR_SHIFT)
 		pte = pgd_pte(pfn_pgd(page_to_pfn(page), pgprot));
 	else if (shift == P4D_SHIFT)
