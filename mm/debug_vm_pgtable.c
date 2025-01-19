@@ -913,6 +913,10 @@ static void __init hugetlb_basic_tests(struct pgtable_debug_args *args)
 	struct page *page;
 	pte_t pte;
 
+	if(args->vma->vm_file == NULL) {
+	  printk(KERN_INFO "cannot run %s because the vm_file is null\n", __PRETTY_FUNCTION__);
+	  return;
+	}
 	pr_debug("Validating HugeTLB basic\n");
 	/*
 	 * Accessing the page associated with the pfn is safe here,
