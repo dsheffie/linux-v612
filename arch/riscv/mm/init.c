@@ -238,7 +238,7 @@ static void __init setup_bootmem(void)
 
 
 	memblock_reserve(1UL<<21, 1UL<<22);
-	memblock_reserve(256*1024*1024, 0x101fffff);
+	memblock_reserve((384+32)*1024*1024, 1UL<<30);
 	/*
 	 * Make sure we align the start of the memory on a PMD boundary so that
 	 * at worst, we map the linear mapping with PMD mappings.
