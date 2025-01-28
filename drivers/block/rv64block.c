@@ -24,7 +24,7 @@ static u64 start = 1UL<<30, size = 1UL<<24;
 static bool rv64block_do_bvec(struct device *dev, struct bio_vec *bv, u32 pos, int wr)
 {
   char *buffer = bvec_kmap_local(bv);
-  printk(KERN_INFO "pos = %u, wr = %d,offset = %u, len = %u", pos, wr, bv->bv_offset, bv->bv_len);
+  
   if(wr) {
     memcpy(disk_image+pos, buffer, bv->bv_len);
   }
@@ -38,20 +38,29 @@ static bool rv64block_do_bvec(struct device *dev, struct bio_vec *bv, u32 pos, i
 
 static void rv64block_submit_bio(struct bio *bio)
 {
-	struct bio_vec bvec;
-	struct bvec_iter iter;
-	struct device *dev = bio->bi_bdev->bd_disk->private_data;
-	u32 pos = bio->bi_iter.bi_sector << SECTOR_SHIFT;
-	
-	bio_for_each_segment(bvec, bio, iter) {
-	  if (!rv64block_do_bvec(dev, &bvec, pos, bio_data_dir(bio) == WRITE)) {
-	    bio_io_error(bio);
-	    return;
-	  }
-	  pos += bvec.bv_len;
-	}
+  struct bio_vec bvec;
+  struct bvec_iter iter;
+  struct device *dev = bio->bi_bdev->bd_disk->private_data;
+  u32 pos = bio->bi_iter.bi_sector << SECTOR_SHIFT;
+  int wr = bio_data_dir(bio) == WRITE;
+  
+  bio_for_each_segment(bvec, bio, iter) {
+    if (!rv64block_do_bvec(dev, &bvec, pos, wr)) {
+      bio_io_error(bio);
+      return;
+    }
+    pos += bvec.bv_len;
+  }
 
-	bio_endio(bio);
+  bio_endio(bio);
+  if(wr) {
+    volatile int *junk = (volatile int*)phys_to_virt(32*1024*1024);
+    int c = ~0;
+    for(int i = 0; i < (1<<20); i++) {
+      c = (c << 1) ^ junk[i];
+    }
+    printk(KERN_INFO "c = %x\n", c);
+  }
 }
 
 static const struct block_device_operations rv64block_fops = {
@@ -99,7 +108,8 @@ static int __init rv64block_init(void) {
     goto out_cleanup_disk;
   
   pr_info("rv64block: %lu kb disk\n", size / 1024);
-  disk_image = kzalloc(size, GFP_KERNEL);  
+  disk_image = phys_to_virt((384+32)*1024*1024);
+  
   return 0;
 
 out_cleanup_disk:
