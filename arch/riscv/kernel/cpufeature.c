@@ -797,7 +797,7 @@ static int __init riscv_fill_hwcap_from_ext_list(unsigned long *isa2hwcap)
 			if (of_property_match_string(cpu_node, "riscv,isa-extensions",
 						     ext->property) < 0)
 				continue;
-
+			pr_info("Found RISCV extension %s\n", ext->name);
 			riscv_isa_set_ext(ext, source_isa);
 		}
 
