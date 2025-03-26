@@ -469,7 +469,8 @@ static inline pte_t pte_clear_flag(pte_t pte, unsigned long flag)
 
 static __always_inline bool has_svnapot(void)
 {
-	return riscv_has_extension_likely(RISCV_ISA_EXT_SVNAPOT);
+  return true;
+  /*return riscv_has_extension_likely(RISCV_ISA_EXT_SVNAPOT);*/
 }
 
 static inline unsigned long __pte_napot(unsigned long val)

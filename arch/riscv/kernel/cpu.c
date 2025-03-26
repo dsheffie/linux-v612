@@ -38,19 +38,25 @@ int riscv_of_processor_hartid(struct device_node *node, unsigned long *hart)
 	}
 
 	cpu = riscv_hartid_to_cpuid(*hart);
-	if (cpu < 0)
-		return cpu;
+	if (cpu < 0) {
+	  printk(KERN_INFO "hart to cpu is %d\n", cpu);
+	  return cpu;
+	}
 
-	if (!cpu_possible(cpu))
-		return -ENODEV;
+	if (!cpu_possible(cpu)) {
+	  printk(KERN_INFO "cpu %d is impossible\n", cpu);
+	  return -ENODEV;
+	}
 
 	return 0;
 }
 
+#define HERE() printk(KERN_INFO "%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
+
 int __init riscv_early_of_processor_hartid(struct device_node *node, unsigned long *hart)
 {
 	const char *isa;
-
+	
 	if (!of_device_is_compatible(node, "riscv")) {
 		pr_warn("Found incompatible CPU\n");
 		return -ENODEV;
@@ -67,8 +73,9 @@ int __init riscv_early_of_processor_hartid(struct device_node *node, unsigned lo
 		return -ENODEV;
 	}
 
-	if (of_property_read_string(node, "riscv,isa-base", &isa))
-		goto old_interface;
+	if (of_property_read_string(node, "riscv,isa-base", &isa)) {
+	  goto old_interface;
+	}
 
 	if (IS_ENABLED(CONFIG_32BIT) && strncasecmp(isa, "rv32i", 5)) {
 		pr_warn("CPU with hartid=%lu does not support rv32i", *hart);
@@ -80,8 +87,10 @@ int __init riscv_early_of_processor_hartid(struct device_node *node, unsigned lo
 		return -ENODEV;
 	}
 
-	if (!of_property_present(node, "riscv,isa-extensions"))
+	if (!of_property_present(node, "riscv,isa-extensions")) {
+	  pr_warn("no riscv,isa-extensions found on heart %lu\n", *hart);
 		return -ENODEV;
+	}
 
 	if (of_property_match_string(node, "riscv,isa-extensions", "i") < 0 ||
 	    of_property_match_string(node, "riscv,isa-extensions", "m") < 0 ||
@@ -94,27 +103,23 @@ int __init riscv_early_of_processor_hartid(struct device_node *node, unsigned lo
 
 old_interface:
 	if (!riscv_isa_fallback) {
-		pr_warn("CPU with hartid=%lu is invalid: this kernel does not parse \"riscv,isa\"",
-			*hart);
-		return -ENODEV;
+	  printk(KERN_INFO "CPU with hartid=%lu is invalid: this kernel does not parse \"riscv,isa\"", *hart);
+	  return -ENODEV;
 	}
-
 	if (of_property_read_string(node, "riscv,isa", &isa)) {
-		pr_warn("CPU with hartid=%lu has no \"riscv,isa-base\" or \"riscv,isa\" property\n",
-			*hart);
-		return -ENODEV;
+	  printk(KERN_INFO "CPU with hartid=%lu has no \"riscv,isa-base\" or \"riscv,isa\" property\n",*hart);
+	  return -ENODEV;
 	}
-
 	if (IS_ENABLED(CONFIG_32BIT) && strncasecmp(isa, "rv32ima", 7)) {
-		pr_warn("CPU with hartid=%lu does not support rv32ima", *hart);
-		return -ENODEV;
+	  printk(KERN_INFO "CPU with hartid=%lu does not support rv32ima", *hart);
+	  return -ENODEV;
 	}
 
 	if (IS_ENABLED(CONFIG_64BIT) && strncasecmp(isa, "rv64ima", 7)) {
-		pr_warn("CPU with hartid=%lu does not support rv64ima", *hart);
-		return -ENODEV;
+	  printk(KERN_INFO "---> CPU with hartid=%lu does not support rv64ima <--", *hart);
+	  return -ENODEV;
 	}
-
+	
 	return 0;
 }
 

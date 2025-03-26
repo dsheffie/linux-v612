@@ -127,9 +127,12 @@ static void __init of_parse_and_init_cpus(void)
 	int rc;
 
 	for_each_of_cpu_node(dn) {
+	    printk(KERN_INFO "found cpu node\n");	    
 		rc = riscv_early_of_processor_hartid(dn, &hart);
-		if (rc < 0)
-			continue;
+		printk(KERN_INFO "riscv_early_of_processor_hartid = %d\n", rc);	    
+		if (rc < 0) {
+		  continue;
+		}
 
 		if (hart == cpuid_to_hartid_map(0)) {
 			BUG_ON(found_boot_cpu);

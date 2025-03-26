@@ -22,6 +22,7 @@ struct sbiret __sbi_ecall(unsigned long arg0, unsigned long arg1,
 			  unsigned long arg4, unsigned long arg5,
 			  int fid, int ext)
 {
+  //printk(KERN_INFO "ecall ext %d, fid %d\n", fid, ext);
 	struct sbiret ret;
 
 	trace_sbi_call(ext, fid);

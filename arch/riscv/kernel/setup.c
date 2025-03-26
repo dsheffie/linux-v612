@@ -226,6 +226,10 @@ static void __init init_resources(void)
 
 static void __init parse_dtb(void)
 {
+  pr_info("dbt_early_va = %lx, dbt pa = %lx\n",
+	  (u64)dtb_early_va,
+	  (u64)dtb_early_pa);
+  
 	/* Early scan of device tree from init memory */
 	if (early_init_dt_scan(dtb_early_va)) {
 		const char *name = of_flat_dt_get_machine_name();
@@ -235,7 +239,9 @@ static void __init parse_dtb(void)
 			dump_stack_set_arch_desc("%s (DT)", name);
 		}
 	} else {
-		pr_err("No DTB passed to the kernel\n");
+	  pr_err("No DTB passed to the kernel, dbt_early_va = %lx, dbt pa = %lx\n",
+		 (u64)dtb_early_va,
+		 (u64)dtb_early_pa);
 	}
 
 #ifdef CONFIG_CMDLINE_FORCE
