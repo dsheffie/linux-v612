@@ -47,10 +47,18 @@ static struct ttyprintk_port tpk_port;
 #define TPK_STR_SIZE 508 /* should be bigger then max expected line length */
 #define TPK_MAX_ROOM 4096 /* we could assume 4K for instance */
 
+#define CSR_TIMEOUT (1<<16)
+
 static void csr_print(const char *buf, int len) {
-  int i;
+  int i,t;
   for(i = 0; i < len; i++) {
-    while(csr_read(0xc03) != 0) {}
+    t = CSR_TIMEOUT;
+    while(csr_read(0xc03) != 0) {
+      t--;
+      if(t == 0) {
+	return;
+      }
+    }
     csr_write(0xc03, buf[i]);
   }
 }
