@@ -66,9 +66,9 @@ endif
 
 # ISA string setting
 riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32ima
-riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima_zicsr_zifencei_zicond
+riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima_zicsr_zifencei_zicond_zba_zbb
 riscv-march-$(CONFIG_FPU)		:= $(riscv-march-y)fd
-riscv-march-$(CONFIG_RISCV_ISA_C)	:= rv64ima_zicsr_zifencei_zicond
+riscv-march-$(CONFIG_RISCV_ISA_C)	:= rv64ima_zicsr_zifencei_zicond_zba_zbb
 riscv-march-$(CONFIG_RISCV_ISA_V)	:= $(riscv-march-y)v
 
 ifneq ($(CONFIG_RISCV_ISA_C),y)
@@ -79,7 +79,8 @@ ifdef CONFIG_TOOLCHAIN_NEEDS_OLD_ISA_SPEC
 KBUILD_CFLAGS += -Wa,-misa-spec=2.2
 KBUILD_AFLAGS += -Wa,-misa-spec=2.2
 else
-riscv-march-$(CONFIG_TOOLCHAIN_NEEDS_EXPLICIT_ZICSR_ZIFENCEI) := $(riscv-march-y)_zicsr_zifencei
+riscv-march-$(CONFIG_TOOLCHAIN_NEEDS_EXPLICIT_ZICSR_ZIFENCEI) := $(riscv-march-y)
+#_zicsr_zifencei
 endif
 
 # Remove F,D,V from isa string for all. Keep extensions between "fd" and "v" by

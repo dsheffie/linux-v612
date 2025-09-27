@@ -68,6 +68,26 @@ SYSCALL_DEFINE3(riscv_flush_icache, uintptr_t, start, uintptr_t, end,
 	return 0;
 }
 
+SYSCALL_DEFINE1(riscv_translate_va, unsigned long, addr)
+{
+  const void __user *ptr = NULL;
+  struct page * pages[1] = {NULL};
+  uint64_t pa = ~0UL;
+  addr &= PAGE_MASK;
+  ptr = (void __user*)addr;
+  
+  if(access_ok(ptr, 1) == 0) {
+    return -EINVAL;
+  }
+  if(get_user_pages_fast(addr, 1, 0, pages) != 1) {
+    return -EINVAL;
+  }
+  pa = page_to_phys(pages[0]);
+  /*printk(KERN_INFO "attempting to translate user address %lx to phys %lx\n",addr, pa); */
+  
+  return pa; 
+}
+
 /* Not defined using SYSCALL_DEFINE0 to avoid error injection */
 asmlinkage long __riscv_sys_ni_syscall(const struct pt_regs *__unused)
 {

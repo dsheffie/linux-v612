@@ -40,3 +40,9 @@
 #define __NR_riscv_flush_icache (__NR_arch_specific_syscall + 15)
 #endif
 __SYSCALL(__NR_riscv_flush_icache, sys_riscv_flush_icache)
+
+#ifndef __NR_riscv_translate_va
+#define __NR_riscv_translate_va (__NR_arch_specific_syscall + 13)
+#endif
+     
+__SYSCALL(__NR_riscv_translate_va, sys_riscv_translate_va)     
