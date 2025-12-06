@@ -202,7 +202,6 @@ asmlinkage __visible __trap_section void do_trap_load_misaligned(struct pt_regs 
 {
 	if (user_mode(regs)) {
 		irqentry_enter_from_user_mode(regs);
-
 		if (handle_misaligned_load(regs))
 			do_trap_error(regs, SIGBUS, BUS_ADRALN, regs->epc,
 			      "Oops - load address misaligned");

@@ -61,17 +61,17 @@
 #include "braille.h"
 #include "internal.h"
 
-static void csr_print(char *buf, int len, int add_nl) {
-  int i;
-  for(i = 0; i < len; i++) {
-    while(csr_read(0xc03) != 0) {}
-    csr_write(0xc03, buf[i]);
-  }
-  if(add_nl) {
-    while(csr_read(0xc03) != 0) {}    
-    csr_write(0xc03, '\n');
-  }
-}
+/* static void csr_print(char *buf, int len, int add_nl) { */
+/*   int i; */
+/*   for(i = 0; i < len; i++) { */
+/*     while(csr_read(0xc03) != 0) {} */
+/*     csr_write(0xc03, buf[i]); */
+/*   } */
+/*   if(add_nl) { */
+/*     while(csr_read(0xc03) != 0) {}     */
+/*     csr_write(0xc03, '\n'); */
+/*   } */
+/* } */
 
 int console_printk[4] = {
 	CONSOLE_LOGLEVEL_DEFAULT,	/* console_loglevel */
@@ -2333,9 +2333,9 @@ int vprintk_store(int facility, int level,
 		memcpy(&r.info->dev_info, dev_info, sizeof(r.info->dev_info));
 
 
-        if(r.info->flags & LOG_NEWLINE) {
-	  csr_print(&r.text_buf[0], r.info->text_len, 1);
-	}
+        /* if(r.info->flags & LOG_NEWLINE) { */
+	/*   csr_print(&r.text_buf[0], r.info->text_len, 1); */
+	/* } */
 	
 	/* A message without a trailing newline can be continued. */
 	if (!(flags & LOG_NEWLINE))
